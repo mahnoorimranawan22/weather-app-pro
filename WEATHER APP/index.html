@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App Pro</title>
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-cloud-sun-rain logo-icon"></i>
+                <h1>Weather App Pro</h1>
+            </div>
+            <button id="themeBtn" class="icon-btn" aria-label="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Left Panel: Search & Controls -->
+            <section class="control-panel glass-panel">
+                <div class="search-box">
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+                        <input type="text" id="cityInput" placeholder="Search for a city..." autocomplete="off">
+                    </div>
+                    <div class="search-actions">
+                        <button id="searchBtn" class="primary-btn" title="Search">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                        <button id="locationBtn" class="secondary-btn" title="Use Current Location">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Favorites Dashboard Section -->
+                <div class="dashboard-segment">
+                    <div class="segment-header">
+                        <h3><i class="fa-solid fa-star icon-gold"></i> Favorite Cities</h3>
+                    </div>
+                    <div id="favoriteList" class="chip-container">
+                        <!-- Dynamic favorite chips go here -->
+                    </div>
+                </div>
+
+                <!-- History Dashboard Section -->
+                <div class="dashboard-segment">
+                    <div class="segment-header">
+                        <h3><i class="fa-solid fa-history"></i> Recent Searches</h3>
+                        <button id="clearHistoryBtn" class="text-link-btn">Clear</button>
+                    </div>
+                    <div id="historyList" class="chip-container">
+                        <!-- Dynamic history chips go here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Weather Display Dashboard -->
+            <section class="display-panel">
+                <!-- Loader and States -->
+                <div id="loader" class="loader-overlay hidden">
+                    <div class="spinner"></div>
+                    <p>Fetching weather parameters...</p>
+                </div>
+
+                <div id="error" class="error-panel glass-panel hidden">
+                    <i class="fa-solid fa-circle-exclamation error-icon"></i>
+                    <p class="error-message">Unable to fetch metrics. Please cross-verify the target query.</p>
+                </div>
+
+                <!-- Main Overview Metrics Component -->
+                <div id="weatherDashboard" class="dashboard-content fade-in">
+                    <div class="hero-weather-grid">
+                        <!-- Main Core Card -->
+                        <div class="main-card glass-panel">
+                            <div class="main-card-header">
+                                <div class="location-identity">
+                                    <h2 id="cityName">Target City</h2>
+                                    <div class="coordinates-meta">
+                                        <span id="geoCoordinates">Lat: -- Lon: --</span>
+                                    </div>
+                                </div>
+                                <button id="favoriteBtn" class="favorite-toggle" title="Bookmark City">
+                                    <i class="fa-regular fa-star"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="main-card-body">
+                                <div class="visual-state">
+                                    <i id="weatherIcon" class="fa-solid fa-cloud-sun dynamic-visual"></i>
+                                    <span id="description" class="weather-desc-text">Clear Sky</span>
+                                </div>
+                                <div class="numerical-metrics">
+                                    <div class="primary-temp-row">
+                                        <span id="temperature" class="metric-giant">--</span><span class="unit-giant">°C</span>
+                                    </div>
+                                    <div class="temporal-meta">
+                                        <div id="currentDateTime">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Atmospheric Grid Metrics -->
+                        <div class="submetrics-grid">
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-temperature-half"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Feels Like</span>
+                                    <span id="feelsLike" class="tile-value">-- °C</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Humidity</span>
+                                    <span id="humidity" class="tile-value">-- %</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-wind"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Wind Speed</span>
+                                    <span id="wind" class="tile-value">-- km/h</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-gauge-high"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Pressure</span>
+                                    <span id="pressure" class="tile-value">-- hPa</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-eye"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Visibility</span>
+                                    <span id="visibility" class="tile-value">-- km</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-sun"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">UV Index</span>
+                                    <span id="uvIndex" class="tile-value">--</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-sunrise"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Sunrise</span>
+                                    <span id="sunrise" class="tile-value">--:--</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-sunset"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Sunset</span>
+                                    <span id="sunset" class="tile-value">--:--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hourly Segment Carousel Container -->
+                    <div class="forecast-section-wrapper glass-panel">
+                        <h3 class="section-title"><i class="fa-regular fa-clock"></i> Hourly Timeline (24h)</h3>
+                        <div id="hourlyForecastContainer" class="horizontal-scroll-container">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- 5-Day Macro Forecast Component -->
+                    <div class="forecast-section-wrapper glass-panel">
+                        <h3 class="section-title"><i class="fa-regular fa-calendar-days"></i> Extended 5-Day Forecast</h3>
+                        <div id="forecastContainer" class="vertical-list-container">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Application Layer Notifications -->
+        <div id="toast" class="toast-notification hidden">Notification Message</div>
+
+        <!-- System Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Weather App Pro. Engineered using modern Vanilla Web Standard Technologies APIs.</p>
+        </footer>
+    </div>
+
+    <!-- Application Script Logic Entry Point -->
+    <script src="script.js"></script>
+</body>
+</html>
