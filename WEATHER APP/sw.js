@@ -4,7 +4,7 @@
  * for the weather/geocoding APIs and image CDNs, so the app works offline.
  */
 
-const CACHE_NAME = 'weather-pro-v2';
+const CACHE_NAME = 'weather-pro-v3';
 const SHELL = [
     './',
     './index.html',
