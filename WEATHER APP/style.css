@@ -568,7 +568,7 @@ h1, h2, h3, .section-title {
    ========================================================================== */
 .app-container {
     width: 100%;
-    max-width: 1400px;
+    max-width: none;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -1275,7 +1275,7 @@ h1, h2, h3, .section-title {
 /* Secondary Parameter Matrix */
 .submetrics-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
 }
 
@@ -2460,6 +2460,19 @@ h1, h2, h3, .section-title {
     .palette-swatch:hover,
     .switch:hover {
         transform: none;
+    }
+}
+
+/* Ultrawide / large desktop monitors: let the sidebar and banner breathe
+   so the full-width layout keeps balanced proportions. */
+@media (min-width: 1800px) {
+    .app-main {
+        grid-template-columns: 400px 1fr;
+        gap: 28px;
+    }
+
+    .city-banner {
+        height: clamp(160px, 15vw, 220px);
     }
 }
 
