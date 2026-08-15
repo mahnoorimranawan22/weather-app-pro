@@ -1164,7 +1164,7 @@
         if (activeWeatherPayload && activeWeatherPayload.offset) {
             const cityTime = new Date(now.getTime() + activeWeatherPayload.offset * 1000);
             DOM.currentDateTime.textContent =
-                `${cityTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })} | ` +
+                `${cityTime.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })} | ` +
                 `${cityTime.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })} (Local)`;
         } else {
             DOM.currentDateTime.textContent = `${formatDate(now)} | ${formatClockTime(now)}`;
