@@ -1,0 +1,19 @@
+{
+  "name": "Weather App Pro",
+  "short_name": "Weather Pro",
+  "description": "A polished, real-time weather intelligence dashboard with hourly timelines, 14-day forecasts, unit switching, weather-mirrored theming and Unsplash HD backdrops.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1cfa3",
+  "theme_color": "#c25a22",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

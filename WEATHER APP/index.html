@@ -1,29 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f1cfa3">
+    <meta name="description"
+        content="Weather App Pro — a polished, real-time weather intelligence dashboard with hourly timelines, 5-day forecasts, unit switching and weather-mirrored theming.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.webmanifest">
     <title>Weather App Pro</title>
-    <!-- Google Fonts - Poppins -->
+    <!-- Google Fonts - Poppins & Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+    <!-- Weather-matched Unsplash background -->
+    <div class="bg-photo" aria-hidden="true"></div>
+
+    <!-- Ambient background orbs -->
+    <div class="bg-blob blob-one" aria-hidden="true"></div>
+    <div class="bg-blob blob-two" aria-hidden="true"></div>
+    <div class="bg-blob blob-three" aria-hidden="true"></div>
+
     <div class="app-container">
         <!-- Header Section -->
         <header class="app-header">
             <div class="logo-area">
                 <i class="fa-solid fa-cloud-sun-rain logo-icon"></i>
-                <h1>Weather App Pro</h1>
+                <div>
+                    <h1>Weather App Pro</h1>
+                    <p class="brand-tagline">Forecast Intelligence</p>
+                </div>
             </div>
-            <button id="themeBtn" class="icon-btn" aria-label="Toggle Theme">
-                <i class="fa-solid fa-moon"></i>
-            </button>
+            <div class="header-actions">
+                <button id="unitBtn" class="unit-toggle" aria-label="Toggle Temperature Unit" title="Toggle °C / °F">
+                    <span class="unit-option active" data-unit="c">°C</span>
+                    <span class="unit-option" data-unit="f">°F</span>
+                </button>
+                <button id="themeBtn" class="icon-btn" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button id="refreshBtn" class="icon-btn" aria-label="Refresh Weather" title="Refresh current weather">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button id="muteBtn" class="icon-btn" aria-label="Mute Feedback Sounds"
+                    title="Toggle sound & haptic feedback">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
         </header>
 
         <!-- Main Workspace -->
@@ -33,7 +66,8 @@
                 <div class="search-box">
                     <div class="input-wrapper">
                         <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
-                        <input type="text" id="cityInput" placeholder="Search for a city..." autocomplete="off">
+                        <input type="text" id="cityInput" placeholder="Search for a city..." autocomplete="off" aria-autocomplete="list" aria-controls="suggestions">
+                        <div id="suggestions" class="suggestions hidden" role="listbox"></div>
                     </div>
                     <div class="search-actions">
                         <button id="searchBtn" class="primary-btn" title="Search">
@@ -41,6 +75,37 @@
                         </button>
                         <button id="locationBtn" class="secondary-btn" title="Use Current Location">
                             <i class="fa-solid fa-location-crosshairs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Palette Section -->
+                <div class="dashboard-segment">
+                    <div class="segment-header">
+                        <h3><i class="fa-solid fa-palette"></i> Theme Palette</h3>
+                    </div>
+                    <div class="palette-row">
+                        <button class="palette-swatch active" data-palette="ember" title="Ember & Ivory"
+                            style="--swatch: linear-gradient(135deg, #c25a22, #e08e0b);"></button>
+                        <button class="palette-swatch" data-palette="rose" title="Rosewood & Blush"
+                            style="--swatch: linear-gradient(135deg, #b3473a, #e8a06f);"></button>
+                        <button class="palette-swatch" data-palette="cocoa" title="Cocoa & Caramel"
+                            style="--swatch: linear-gradient(135deg, #5b3a24, #c98a3d);"></button>
+                        <button class="palette-swatch" data-palette="midnight" title="Charcoal & Gold"
+                            style="--swatch: linear-gradient(135deg, #2b2b2e, #c9a227);"></button>
+                    </div>
+                    <div class="backdrop-row">
+                        <span class="backdrop-label"><i class="fa-solid fa-image"></i> Photo Backdrop</span>
+                        <button id="backdropToggle" class="switch on" role="switch" aria-checked="true"
+                            title="Toggle Unsplash photo backdrop">
+                            <span class="switch-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="backdrop-row">
+                        <span class="backdrop-label"><i class="fa-solid fa-film"></i> Backdrop Slideshow</span>
+                        <button id="slideshowToggle" class="switch" role="switch" aria-checked="false"
+                            title="Rotate HD backdrop photos automatically">
+                            <span class="switch-thumb"></span>
                         </button>
                     </div>
                 </div>
@@ -69,15 +134,22 @@
 
             <!-- Right Panel: Weather Display Dashboard -->
             <section class="display-panel">
+                <!-- Full-width city photo banner -->
+                <div class="city-banner" aria-hidden="true">
+                    <div id="cityBannerPhoto" class="city-banner-photo"></div>
+                </div>
+
                 <!-- Loader and States -->
                 <div id="loader" class="loader-overlay hidden">
                     <div class="spinner"></div>
                     <p>Fetching weather parameters...</p>
                 </div>
 
-                <div id="error" class="error-panel glass-panel hidden">
+                <div id="error" class="error-panel glass-panel hidden" role="alert">
                     <i class="fa-solid fa-circle-exclamation error-icon"></i>
                     <p class="error-message">Unable to fetch metrics. Please cross-verify the target query.</p>
+                    <button id="retryBtn" class="primary-btn"><i class="fa-solid fa-rotate-right"></i> Try
+                        Again</button>
                 </div>
 
                 <!-- Main Overview Metrics Component -->
@@ -85,6 +157,7 @@
                     <div class="hero-weather-grid">
                         <!-- Main Core Card -->
                         <div class="main-card glass-panel">
+                            <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
                             <div class="main-card-header">
                                 <div class="location-identity">
                                     <h2 id="cityName">Target City</h2>
@@ -92,11 +165,20 @@
                                         <span id="geoCoordinates">Lat: -- Lon: --</span>
                                     </div>
                                 </div>
-                                <button id="favoriteBtn" class="favorite-toggle" title="Bookmark City">
-                                    <i class="fa-regular fa-star"></i>
-                                </button>
+                                <div class="main-card-actions">
+                                    <button id="exportBtn" class="favorite-toggle"
+                                        title="Download forecast data (JSON)">
+                                        <i class="fa-solid fa-file-arrow-down"></i>
+                                    </button>
+                                    <button id="shareBtn" class="favorite-toggle" title="Copy forecast summary">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                    </button>
+                                    <button id="favoriteBtn" class="favorite-toggle" title="Bookmark City">
+                                        <i class="fa-regular fa-star"></i>
+                                    </button>
+                                </div>
                             </div>
-                            
+
                             <div class="main-card-body">
                                 <div class="visual-state">
                                     <i id="weatherIcon" class="fa-solid fa-cloud-sun dynamic-visual"></i>
@@ -104,12 +186,20 @@
                                 </div>
                                 <div class="numerical-metrics">
                                     <div class="primary-temp-row">
-                                        <span id="temperature" class="metric-giant">--</span><span class="unit-giant">°C</span>
+                                        <span id="temperature" class="metric-giant">--</span><span id="unitGiant"
+                                            class="unit-giant">°C</span>
                                     </div>
                                     <div class="temporal-meta">
                                         <div id="currentDateTime">--</div>
+                                        <div id="lastUpdated" class="last-updated">--</div>
+                                        <div id="yesterdayDelta" class="yesterday-delta">--</div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="insight-strip">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span id="insightText">Weather insights load with your forecast.</span>
                             </div>
                         </div>
 
@@ -134,6 +224,8 @@
                                 <div class="tile-data">
                                     <span class="tile-label">Wind Speed</span>
                                     <span id="wind" class="tile-value">-- km/h</span>
+                                    <span class="tile-submeta"><i id="windArrow" class="fa-solid fa-arrow-up"></i> <span
+                                            id="windDirection">--</span> · Gusts <span id="windGust">--</span></span>
                                 </div>
                             </div>
                             <div class="metric-tile glass-panel">
@@ -141,6 +233,7 @@
                                 <div class="tile-data">
                                     <span class="tile-label">Pressure</span>
                                     <span id="pressure" class="tile-value">-- hPa</span>
+                                    <span id="pressureTrend" class="tile-submeta">--</span>
                                 </div>
                             </div>
                             <div class="metric-tile glass-panel">
@@ -155,6 +248,28 @@
                                 <div class="tile-data">
                                     <span class="tile-label">UV Index</span>
                                     <span id="uvIndex" class="tile-value">--</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-cloud"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Cloud Cover</span>
+                                    <span id="cloudCover" class="tile-value">-- %</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Dew Point</span>
+                                    <span id="dewPoint" class="tile-value">--</span>
+                                </div>
+                            </div>
+                            <div class="metric-tile glass-panel">
+                                <div class="tile-icon-wrapper"><i class="fa-solid fa-leaf"></i></div>
+                                <div class="tile-data">
+                                    <span class="tile-label">Air Quality (US AQI)</span>
+                                    <span id="aqiValue" class="tile-value">--</span>
+                                    <span id="aqiLabel" class="tile-submeta">--</span>
                                 </div>
                             </div>
                             <div class="metric-tile glass-panel">
@@ -174,9 +289,67 @@
                         </div>
                     </div>
 
+                    <!-- Multi-City Comparison -->
+                    <div class="comparison-card glass-panel">
+                        <h3 class="section-title">
+                            <i class="fa-solid fa-layer-group"></i> Multi-City Comparison
+                            <button id="compareRefreshBtn" class="text-link-btn" title="Refresh comparison data"><i
+                                    class="fa-solid fa-rotate"></i></button>
+                        </h3>
+                        <div class="compare-add-row">
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-city search-input-icon"></i>
+                                <input type="text" id="compareInput" placeholder="Add a city to compare..."
+                                    autocomplete="off">
+                            </div>
+                            <button id="compareAddBtn" class="secondary-btn" title="Add City"><i
+                                    class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <div id="compareGrid" class="compare-grid">
+                            <!-- Dynamic comparison cards go here -->
+                        </div>
+                    </div>
+
+                    <!-- Daylight Arc Visualization -->
+                    <div class="daylight-card glass-panel">
+                        <div class="daylight-photo" id="daylightPhoto" aria-hidden="true"></div>
+                        <h3 class="section-title"><i class="fa-solid fa-sun"></i> Daylight Arc</h3>
+                        <div class="daylight-layout">
+                            <svg id="daylightArc" class="daylight-arc-svg" viewBox="0 0 220 110" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0" style="stop-color: var(--accent-color);"></stop>
+                                        <stop offset="1" style="stop-color: var(--gold-star);"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <line x1="20" y1="95" x2="200" y2="95" style="stroke: var(--panel-border);"
+                                    stroke-width="1.5" stroke-dasharray="4 4"></line>
+                                <path d="M 30 95 A 80 80 0 0 1 190 95" fill="none" style="stroke: var(--accent-soft);"
+                                    stroke-width="6" stroke-linecap="round"></path>
+                                <path id="daylightTraveled" d="M 30 95 A 80 80 0 0 1 190 95" fill="none"
+                                    stroke="url(#arcGrad)" stroke-width="6" stroke-linecap="round"></path>
+                                <circle id="daylightSun" cx="110" cy="95" r="6" style="fill: var(--gold-star);">
+                                </circle>
+                            </svg>
+                            <div class="daylight-meta">
+                                <span class="daylight-edge"><i class="fa-solid fa-sunrise"></i> <span
+                                        id="daylightSunrise">--</span></span>
+                                <span class="daylight-center">
+                                    <strong id="daylightDuration">--</strong>
+                                    <small id="daylightNoon">--</small>
+                                </span>
+                                <span class="daylight-edge"><i class="fa-solid fa-sunset"></i> <span
+                                        id="daylightSunset">--</span></span>
+                            </div>
+                            <div id="daylightCountdown" class="daylight-countdown">--</div>
+                        </div>
+                    </div>
+
                     <!-- Hourly Segment Carousel Container -->
                     <div class="forecast-section-wrapper glass-panel">
                         <h3 class="section-title"><i class="fa-regular fa-clock"></i> Hourly Timeline (24h)</h3>
+                        <svg id="trendChart" class="trend-chart" viewBox="0 0 600 120" preserveAspectRatio="none"
+                            aria-hidden="true"></svg>
                         <div id="hourlyForecastContainer" class="horizontal-scroll-container">
                             <!-- Injected dynamically -->
                         </div>
@@ -184,9 +357,31 @@
 
                     <!-- 5-Day Macro Forecast Component -->
                     <div class="forecast-section-wrapper glass-panel">
-                        <h3 class="section-title"><i class="fa-regular fa-calendar-days"></i> Extended 5-Day Forecast</h3>
+                        <h3 class="section-title"><i class="fa-regular fa-calendar-days"></i> Extended 14-Day Forecast
+                        </h3>
                         <div id="forecastContainer" class="vertical-list-container">
                             <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Forecast Extremes Summary -->
+                    <div class="extremes-card glass-panel">
+                        <h3 class="section-title"><i class="fa-solid fa-ranking-star"></i> Forecast Extremes</h3>
+                        <div class="extremes-grid">
+                            <div class="extreme-tile extreme-hot">
+                                <span class="extreme-tag"><i class="fa-solid fa-fire"></i> Warmest Day</span>
+                                <span id="extremeHotDate" class="extreme-date">--</span>
+                                <div class="extreme-main"><i id="extremeHotIcon" class="fa-solid fa-sun"></i> <span
+                                        id="extremeHotTemp" class="extreme-temp">--</span></div>
+                                <span id="extremeHotDesc" class="extreme-desc">--</span>
+                            </div>
+                            <div class="extreme-tile extreme-cold">
+                                <span class="extreme-tag"><i class="fa-solid fa-snowflake"></i> Coldest Day</span>
+                                <span id="extremeColdDate" class="extreme-date">--</span>
+                                <div class="extreme-main"><i id="extremeColdIcon" class="fa-solid fa-snowflake"></i>
+                                    <span id="extremeColdTemp" class="extreme-temp">--</span></div>
+                                <span id="extremeColdDesc" class="extreme-desc">--</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -194,15 +389,24 @@
         </main>
 
         <!-- Application Layer Notifications -->
-        <div id="toast" class="toast-notification hidden">Notification Message</div>
+        <div id="toast" class="toast-notification hidden" aria-live="polite" role="status">Notification Message</div>
+
+        <!-- Scroll to Top -->
+        <button id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="Back to top" title="Back to top">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
 
         <!-- System Footer -->
         <footer class="app-footer">
-            <p>&copy; 2026 Weather App Pro. Engineered using modern Vanilla Web Standard Technologies APIs.</p>
+            <p>&copy; 2026 Weather App Pro &middot; v2.0 &mdash; Engineered using modern Vanilla Web Standard
+                Technologies APIs.</p>
+            <p class="photo-credit">Backdrop photography via <a href="https://unsplash.com" target="_blank"
+                    rel="noopener">Unsplash</a>.</p>
         </footer>
     </div>
 
     <!-- Application Script Logic Entry Point -->
     <script src="script.js"></script>
 </body>
+
 </html>
